@@ -3,15 +3,15 @@ import { ButtonComponent } from './elements/button/Button';
 import { CheckboxComponent } from './elements/checkbox/Checkbox';
 import { InputComponent } from './elements/Input/Input';
 import { SelectComponent } from './elements/select/Select';
+import { FormValues } from './types/formValues';
 
-type ValueToElementMapProps = {
-  text?: string;
-  placeholder?: string;
-};
+type ValueToElementMapParams = Partial<FormValues>;
 
-export const valueToElementMap = ({ text, placeholder }: ValueToElementMapProps) => ({
+export const valueToElementMap = ({
+  buttonText, placeholder, name, label,
+}: ValueToElementMapParams) => ({
   [Values.CHECKBOX]: CheckboxComponent,
-  [Values.INPUT]: InputComponent(placeholder || ''),
-  [Values.SUBMIT_BUTTON]: ButtonComponent(text || ''),
+  [Values.INPUT]: InputComponent({ name, placeholder, label }),
+  [Values.SUBMIT_BUTTON]: ButtonComponent(buttonText || ''),
   [Values.SELECT]: SelectComponent,
 });

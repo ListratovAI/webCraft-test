@@ -1,29 +1,56 @@
 import { useRef, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { saveAs } from 'file-saver';
 import {
-
-  Typography, Col, Row,
+  Col, Row,
   Button,
+  Modal,
 } from 'antd';
 
 import { Template } from 'app/components/Template/Template';
 import { Settings } from 'app/components/Settings/Settings';
-import { FooterStyled, TemplateStyled } from './TemplateEditor.styled';
-import { Values } from './constants/options';
+import { FooterStyled, TemplateStyled, TitleStyled } from './TemplateEditor.styled';
 import { valueToElementMap } from './valueToElementMap';
-
-const { Title } = Typography;
+import { ElementsList } from './types/elementsList';
+import { Actions } from './components/Actions/Actions';
+import { FormValues } from './types/formValues';
 
 const TemplateEditor = () => {
-  const [elements, setElements] = useState<React.ReactElement[]>([]);
+  const [elements, setElements] = useState<ElementsList[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isDeleteMode, setIsDeleteMode] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const addElementToPage = (elementType: Values) => {
+  const addElementToPage = ({
+    type, ...values
+  }: FormValues) => {
+    const id = uuidv4();
     setElements((prevElements) => ([
       ...prevElements,
-      valueToElementMap({ text: 'кнопка', placeholder: 'плейсхолдер' })[elementType],
+      {
+        content: valueToElementMap(
+          values,
+        )[type],
+        id,
+      },
     ]));
+    setIsModalOpen(false);
+  };
+
+  const removeElementFromPage = (elementId: string) => {
+    setElements((prevElements) => prevElements.filter((el) => el.id !== elementId));
+    setIsDeleteMode(false);
   };
 
   const handleOnSaveHTML = () => {
@@ -32,22 +59,38 @@ const TemplateEditor = () => {
     saveAs(blob, 'template.html');
   };
 
+  const isEditDisabled = !elements.length;
+
   return (
     <TemplateStyled>
-      <Title>Редактор html форм</Title>
+      <TitleStyled>Редактор html форм</TitleStyled>
+      <Actions
+        isDeleteMode={isDeleteMode}
+        isEditMode={isEditMode}
+        isEditDisabled={isEditDisabled}
+        setIsDeleteMode={setIsDeleteMode}
+        setIsEditMode={setIsEditMode}
+        showModal={showModal}
+      />
       <Row>
-        <Col span={12}>
-          <Template ref={ref} elements={elements} />
-        </Col>
-        <Col span={12}>
-          <Settings
-            onAddElement={addElementToPage}
+        <Col span={24}>
+          <Template
+            ref={ref}
+            elements={elements}
+            removeElementFromPage={removeElementFromPage}
+            isEditMode={isEditMode}
+            isDeleteMode={isDeleteMode}
           />
         </Col>
       </Row>
       <FooterStyled>
         <Button onClick={handleOnSaveHTML}>Экспорт формы</Button>
       </FooterStyled>
+      <Modal title="Добавление элемента" open={isModalOpen} onCancel={closeModal} footer="">
+        <Settings
+          onAddElement={addElementToPage}
+        />
+      </Modal>
     </TemplateStyled>
   );
 };
