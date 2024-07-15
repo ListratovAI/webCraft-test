@@ -36,7 +36,7 @@ const ButtonReactComponent = ({ text }: ButtonReactComponentProps) => {
   }));
 
   const opacity = isDragging ? 0.4 : 1;
-  return (<Button ref={drag} style={{ ...generalStyles, opacity }}>{text}</Button>);
+  return (<Button ref={drag} style={{ ...generalStyles, opacity }} type="primary" htmlType="submit">{text}</Button>);
 };
 
 export const ButtonComponent = (text: string) => <ButtonReactComponent text={text} />;

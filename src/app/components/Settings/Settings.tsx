@@ -3,9 +3,12 @@ import { useState } from 'react';
 import { Options, Values } from 'app/constants/options';
 import { Checkbox, Form, Input } from 'antd';
 import { FormValues } from 'app/types/formValues';
+import { InputType } from 'app/types/inputType';
 import {
   ButtonStyled, FormItemStyled, SelectStyled,
 } from './Settings.styled';
+import { SelectSettings } from './SelectSettings/SelectSettings';
+import { InputSettings } from './InputSettings/InputSettings';
 
 type SettingsProps = {
   onAddElement: (value: FormValues) => void;
@@ -16,14 +19,18 @@ export const Settings = (
 ) => {
   const [form] = Form.useForm();
   const [selectedType, setSelectedType] = useState<Values>(Values.INPUT);
+  const [options, setOptions] = useState<string[]>([]);
+  const [inputType, setInputType] = useState<InputType>(InputType.TEXT);
+
   const handleOnAddElement = (values: FormValues) => {
-    onAddElement(values);
+    onAddElement({ ...values, options, inputType });
     form.resetFields();
   };
 
   const isSubmitButton = selectedType === Values.SUBMIT_BUTTON;
   const isGeneralSettings = !isSubmitButton;
   const isInput = selectedType === Values.INPUT;
+  const isSelect = selectedType === Values.SELECT;
 
   return (
     <Form onFinish={handleOnAddElement} form={form}>
@@ -31,9 +38,7 @@ export const Settings = (
         <SelectStyled options={Options} onChange={setSelectedType} />
       </FormItemStyled>
       {isInput && (
-      <FormItemStyled name="placeholder" rules={[{ required: true, message: 'Пожалуйста, введите placeholder!' }]}>
-        <Input placeholder="Введите placeholder" />
-      </FormItemStyled>
+      <InputSettings inputType={inputType} setInputType={setInputType} />
       )}
       {isGeneralSettings && (
       <>
@@ -47,6 +52,9 @@ export const Settings = (
           <Checkbox>Обязательное поле</Checkbox>
         </FormItemStyled>
       </>
+      )}
+      {isSelect && (
+        <SelectSettings options={options} setOptions={setOptions} />
       )}
       {isSubmitButton && (
       <FormItemStyled name="buttonText" rules={[{ required: true, message: 'Пожалуйста, введите текст на кнопке!' }]}>

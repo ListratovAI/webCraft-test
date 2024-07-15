@@ -1,13 +1,21 @@
 /* eslint-disable react/require-default-props */
 import { Input } from 'antd';
 import { generalStyles } from 'app/constants/generalStyles';
+import { InputType } from 'app/types/inputType';
 
 type InputComponentProps = {
   name?: string;
   placeholder?: string;
-  label?: string;
+  inputType?: InputType;
 };
 
-export const InputComponent = ({ name, placeholder, label }: InputComponentProps) => (
-  <Input name={name} aria-label={label} placeholder={placeholder} style={generalStyles} />
+export const InputComponent = ({
+  name, placeholder, inputType,
+}: InputComponentProps) => (
+  <Input
+    name={name}
+    type={inputType}
+    placeholder={placeholder}
+    style={generalStyles}
+  />
 );

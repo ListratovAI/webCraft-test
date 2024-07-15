@@ -8,10 +8,12 @@ import { FormValues } from './types/formValues';
 type ValueToElementMapParams = Partial<FormValues>;
 
 export const valueToElementMap = ({
-  buttonText, placeholder, name, label,
+  buttonText, placeholder, name, options, inputType,
 }: ValueToElementMapParams) => ({
   [Values.CHECKBOX]: CheckboxComponent,
-  [Values.INPUT]: InputComponent({ name, placeholder, label }),
+  [Values.INPUT]: InputComponent({
+    name, placeholder, inputType,
+  }),
   [Values.SUBMIT_BUTTON]: ButtonComponent(buttonText || ''),
-  [Values.SELECT]: SelectComponent,
+  [Values.SELECT]: SelectComponent({ options }),
 });

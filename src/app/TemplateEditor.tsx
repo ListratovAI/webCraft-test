@@ -1,6 +1,4 @@
-import { useRef, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { saveAs } from 'file-saver';
+import { useState } from 'react';
 import {
   Col, Row,
   Button,
@@ -10,56 +8,25 @@ import {
 import { Template } from 'app/components/Template/Template';
 import { Settings } from 'app/components/Settings/Settings';
 import { FooterStyled, TemplateStyled, TitleStyled } from './TemplateEditor.styled';
-import { valueToElementMap } from './valueToElementMap';
-import { ElementsList } from './types/elementsList';
 import { Actions } from './components/Actions/Actions';
-import { FormValues } from './types/formValues';
+import { useTemplateEditor } from './hooks/useTemplateEditor';
 
 const TemplateEditor = () => {
-  const [elements, setElements] = useState<ElementsList[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [isEditMode, setIsEditMode] = useState(false);
-  const [isDeleteMode, setIsDeleteMode] = useState(false);
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const ref = useRef<HTMLDivElement>(null);
-
-  const addElementToPage = ({
-    type, ...values
-  }: FormValues) => {
-    const id = uuidv4();
-    setElements((prevElements) => ([
-      ...prevElements,
-      {
-        content: valueToElementMap(
-          values,
-        )[type],
-        id,
-      },
-    ]));
-    setIsModalOpen(false);
-  };
-
-  const removeElementFromPage = (elementId: string) => {
-    setElements((prevElements) => prevElements.filter((el) => el.id !== elementId));
-    setIsDeleteMode(false);
-  };
-
-  const handleOnSaveHTML = () => {
-    const text = ref?.current?.outerHTML || '';
-    const blob = new Blob([text], { type: 'text/plain' });
-    saveAs(blob, 'template.html');
-  };
-
-  const isEditDisabled = !elements.length;
+  const {
+    isDeleteMode,
+    isModalOpen,
+    showModal,
+    closeModal,
+    isEditDisabled,
+    addElementToPage,
+    removeElementFromPage,
+    handleOnSaveHTML,
+    setIsDeleteMode,
+    ref,
+    elements,
+  } = useTemplateEditor();
 
   return (
     <TemplateStyled>

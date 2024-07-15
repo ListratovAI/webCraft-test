@@ -41,7 +41,9 @@ export const Template = forwardRef<HTMLDivElement, TemplateProps>((
               key={element.id}
               onClick={() => handeOnClick(element.id)}
             >
-              {element.content}
+              <Form.Item name={element.name} label={element.label} required={element.isRequired}>
+                {element.content}
+              </Form.Item>
             </div>
           ))}
         </Form>
